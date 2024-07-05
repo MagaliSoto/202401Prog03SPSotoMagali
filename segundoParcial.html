@@ -1,0 +1,772 @@
+<!DOCTYPE html
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Laboratorio 3</title>
+    <style>
+        .form-listado {
+            position: relative;
+            width: 635px;
+            max-width: 100%;
+            height: 250px; 
+            padding: 0; 
+            box-sizing: border-box; 
+            margin: 0 auto;
+            
+            background-color: #faa6e1; 
+            border: 3px solid #f57adad2;
+            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.1);
+        
+        }
+
+        .form-listado h1 {  
+            position: absolute;
+            bottom: 75%;
+            left: 24%;
+        }
+
+        .form-ABM {
+            position: absolute;
+            width: 350px;
+            max-width: 100%;
+            height: 310px; 
+            padding: 0; /* Añade relleno para separar el texto del borde */
+            border: 1px solid #000000; 
+            top: 0%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 3px;
+            box-sizing: border-box; 
+            margin: 0 auto;
+            visibility: hidden;
+            
+            background-color: #faa6e1; 
+            border: 3px solid #f57adad2;
+            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            position: relative;
+            background-color: #f7d4f4;
+            border: 1px solid #f780e3f5;
+            /*1:horizontal, 2: vertical, 3: desenfoque */
+            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        table button {
+            background-color: #f7d4f4;
+            border: 1.5px solid;
+            border-color: #f780e3f5;;
+            border-radius: 0px;
+        }
+
+        button {
+            background-color: #f7d4f4;
+            border: 2px solid transparent;
+            box-shadow: 2px 2px 4px rgb(0, 0, 0);
+            border-radius: 8px;
+        }
+
+        .input-box {
+            background-color: #f7d4f4;
+            border: 2px solid rgb(243, 153, 191);
+        }
+        
+        .texto-form {
+            font-family:'Times New Roman', Times, serif;
+            position: absolute; 
+            text-align:left;
+            margin: 20px;
+        }
+
+        h1 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .texto-form p {
+            margin: 5px 0; 
+        }
+
+        .espacio {
+            height: 5px; 
+            margin: 10px 0;
+        }
+        .contenedor {
+            display: flex; 
+            align-items: center;
+            width: 600px;
+            height: 20px;
+        }
+        
+        label {
+            display: inline-block; 
+            margin-right: 10px; 
+        }
+
+        table {
+            position: absolute;
+            bottom: 22px;
+            left: 0;
+        }
+        
+        th, td {
+            border: 2px solid black;
+        }
+
+        .posicion-centrada-abajo {     
+            position: absolute;
+            bottom: 0;
+            left: 33%;
+        }
+        
+        .contenedor-botones {
+            text-align: center;
+            height: 25px;
+        } 
+
+        .contenedor-botones button {
+            margin-right: 10px;
+        }
+
+        .chkColumna {
+            font-family:'Times New Roman', Times, serif;
+        }
+
+        .spinner-overlay {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; 
+            visibility: hidden;
+        }
+
+        
+        .spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite; 
+        }
+
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+    <script>
+        function ValidarNoNulo(valor1, valor2, valor3, valor4, valor5 = 0, valor6 = 0) {
+            const valores = [valor1, valor2, valor3, valor4, valor5, valor6]; 
+            //some verifica si al menos un elemento del array cumple con cierta condición
+            const esNull = valores.some(valor => valor === null || valor === '');
+
+            return !esNull;
+        } 
+
+        function ValidarPalabra(palabra) {
+            const condicion = /^[a-zA-Z]+$/;
+            if (!condicion.test(palabra)) {
+                throw new Error("Se permiten únicamente letras, sin números ni otros caracteres.");
+            }
+        }
+
+        function ValidarNumeroMayor(valor, numero, nombreVariable) {
+            if (typeof valor !== 'number' || isNaN(valor)) {
+                throw new Error(`El valor de '${nombreVariable}' debe ser un número.`);
+            }
+            if (valor < numero) {
+                throw new Error(`El valor de '${nombreVariable}' debe ser mayor a ${numero}.`);
+            }
+        }
+
+        function EsMayorQue(valor, numero, nombreVariable) {
+            if (typeof valor !== 'number' || isNaN(valor)) {
+                throw new Error(`El valor de '${nombreVariable}' debe ser un número.`);
+            }
+            if (valor < numero) {
+                throw new Error(`El valor de '${nombreVariable}' debe ser mayor a ${numero}.`);
+            }
+        }
+
+        function ValidarNumeroAAAAMMDD(numero) {
+            numero = numero.toString();
+
+            if (numero.length !== 8) {
+                return false;
+            }
+
+            if (!/^\d+$/.test(numero)) {
+                return false;
+            }
+
+            var año = parseInt(numero.slice(0, 4), 10);
+            var mes = parseInt(numero.slice(4, 6), 10);
+            var día = parseInt(numero.slice(6), 10);
+
+            if (año >= 1900 && año <= 9999 && mes >= 1 && mes <= 12 && día >= 1 && día <= 31) {
+                return true;
+            }
+            return false;
+        }
+
+        function Persona(id, nombre, apellido, fechaDeNacimiento) {
+            if (!ValidarNoNulo(id, nombre, apellido, fechaDeNacimiento)) {
+                throw new Error("Ninguno de los atributos puede ser nulo.");
+            }
+            ValidarPalabra(nombre);
+            ValidarPalabra(apellido);
+            ValidarNumeroAAAAMMDD(fechaDeNacimiento);
+
+            this.id = id;
+            this.nombre = nombre;
+            this.apellido = apellido;
+            this.fechaDeNacimiento = fechaDeNacimiento;
+
+            this.toString = function() {
+                // code
+            }
+        }
+
+        function Ciudadano(dni, id, nombre, apellido, fechaDeNacimiento) {
+            if (!ValidarNoNulo(id, nombre, apellido, fechaDeNacimiento, dni)) {
+                throw new Error("Ninguno de los atributos puede ser nulo.");
+            }
+            ValidarPalabra(nombre)
+            ValidarPalabra(apellido);
+            ValidarNumeroAAAAMMDD(fechaDeNacimiento);
+            EsMayorQue(dni,0,"dni");
+            this.dni = dni;
+
+            Persona.call(this, id, nombre, apellido, fechaDeNacimiento);
+        }
+
+        function Extranjero(paisOrigen, id, nombre, apellido, fechaDeNacimiento) {
+            if (!ValidarNoNulo(paisOrigen, id, nombre, apellido, fechaDeNacimiento)) {
+                throw new Error("Ninguno de los atributos puede ser nulo.");
+            }
+            ValidarPalabra(nombre)
+            ValidarPalabra(apellido);
+            ValidarPalabra(paisOrigen);
+            ValidarNumeroAAAAMMDD(fechaDeNacimiento);
+
+            this.paisOrigen = paisOrigen;
+
+            Persona.call(this, id, nombre, apellido, fechaDeNacimiento);
+        }
+
+        function GenerarObjetosDesdeCadena(string) {
+            const objetos = JSON.parse(string);
+            const objetosGenerados = [];
+
+            objetos.forEach(objeto => {
+                if ("dni" in objeto) {
+                    objetosGenerados.push(new Ciudadano(
+                        objeto.dni, 
+                        objeto.id, 
+                        objeto.nombre, 
+                        objeto.apellido, 
+                        objeto.fechaNacimiento
+                    ));
+                } else if ("paisOrigen" in objeto) {
+                    objetosGenerados.push(new Extranjero(
+                        objeto.paisOrigen, 
+                        objeto.id, 
+                        objeto.nombre, 
+                        objeto.apellido, 
+                        objeto.fechaNacimiento
+                    ));
+                }
+            });
+            return objetosGenerados;
+        }
+
+        function VisibilityFormularios(toHide, toShow) {                
+            toHide.style.visibility = 'hidden';
+            toShow.style.visibility = 'visible';
+        }
+        
+        function VaciarFormAMB() {           
+            txtId.value = '';
+            txtNombre.value = '';
+            txtApellido.value = '';
+            txtFechaDeNacimiento.value = '';
+            txtTipo.value = '';
+            txtDni.value = '';
+            txtPaisOrigen.value = '';
+            
+        }
+
+        function HabilitarEdicion(habilitar) {
+            txtNombre.disabled = !habilitar;
+            txtApellido.disabled = !habilitar;
+            txtFechaDeNacimiento.disabled = !habilitar;
+            txtTipo.disabled = !habilitar;
+            txtDni.disabled = true;
+            txtPaisOrigen.disabled = true;
+        }
+        
+        let objetosGenerados = [];
+
+        window.addEventListener('load', function() {
+            const formListado = document.querySelector('.form-listado');
+            const formAMB = document.querySelector('.form-ABM');
+
+            const columnas = ['ID', 'Apellido', 'Nombre', 'Fecha De Nacimiento', 'Dni', 'Pais Origen', 'Modificar', 'Eliminar'];
+            const thead = document.createElement('thead');
+            const primerFila = document.createElement('tr');
+            const table = document.querySelector('.form-listado  table');
+            const tbody = table.querySelector('tbody');         
+            const datosFila = [];
+
+            const btnAgregarElemento = document.getElementById('btnAgregarElemento');
+            const btnAceptar= document.getElementById('btnAceptar');
+            const btnCancelar = document.getElementById('btnCancelar');
+        
+            const txtNombre = document.getElementById('txtNombre');
+            const txtApellido = document.getElementById('txtApellido');
+            const txtFechaDeNacimiento = document.getElementById('txtFechaDeNacimiento');
+            const txtTipo = document.getElementById('txtTipo');
+            const txtDni = document.getElementById('txtDni');
+            const txtPaisOrigen = document.getElementById('txtPaisOrigen');
+            
+            const h3EncabezadoABM = document.getElementById('encabezadoABM');
+
+            const spinnerOverlay = document.getElementById('spinnerOverlay');
+
+            
+            const xhr = new XMLHttpRequest();
+            const url = "https://examenesutn.vercel.app/api/PersonaCiudadanoExtranjero";
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        const cadenaDatos = xhr.responseText;
+                        objetosGenerados = GenerarObjetosDesdeCadena(cadenaDatos);
+                        CrearTabla();               
+                    } else {
+                        console.error('Error al realizar la solicitud:', xhr.status);
+                    }
+                }
+            };
+            spinnerOverlay.style.visibility = 'visible';
+            xhr.send();
+
+            
+            // TABLA
+            function CrearTabla() {
+                columnas.forEach(columna => {
+                    primerFila.innerHTML += `<th>${columna}</th>`;
+                });
+
+                thead.appendChild(primerFila);
+                table.appendChild(thead);
+
+                const filasActuales = tbody.querySelectorAll('tr');
+                    
+                objetosGenerados.slice(filasActuales.length - 1).forEach(objeto => {
+                    const fila = document.createElement('tr');
+                    // para despues poder filtrarlo
+                    fila.classList.add(objeto instanceof Ciudadano ? 'ciudadano' : 'extranjero');
+
+                    columnas.forEach(columna => {
+                        if (columna === 'Modificar') {
+                            fila.innerHTML += `<td><button id="btnModificar${objeto.id}" class="table-button" data-action="modificarElemento" type="button">Modificar</button></td>`;
+                        } else if (columna === 'Eliminar') {
+                            fila.innerHTML += `<td><button id="btnEliminar${objeto.id}" class="table-button" data-action="eliminarElemento" type="button">Eliminar</button></td>`;
+                        }  else if (columna === "Fecha De Nacimiento") {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto.fechaDeNacimiento}</td>`;
+                        } else if ("paisOrigen" in objeto && columna === "Pais Origen") {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto.paisOrigen}</td>`;
+                        } else if (columna.toLowerCase() in objeto) {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto[columna.toLowerCase()]}</td>`;
+                        } else {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">N/A</td>`;
+                        }
+                    });
+                    tbody.appendChild(fila);
+                });
+                const tablaAltura = table.clientHeight;
+                const tablaAncho = table.clientWidth;
+                formListado.style.width = (tablaAncho + 10) + 'px';
+                formListado.style.height = (tablaAltura + 70) + 'px';
+
+                spinnerOverlay.style.visibility = 'hidden';
+            }
+
+            function ActualizarTabla() {
+                const filas = tbody.querySelectorAll('tr');
+
+                filas.forEach((fila, index) => {
+                    const objeto = objetosGenerados[index];
+
+                    if (objeto) {
+                        fila.innerHTML = ''; 
+                        fila.classList.add(objeto instanceof Ciudadano ? 'ciudadano' : 'extranjero');
+                        
+                        columnas.forEach(columna => {
+                            if (columna === 'Modificar') {
+                                fila.innerHTML += `<td><button id="btnModificar${objeto.id}" class="table-button" data-action="modificarElemento" type="button">Modificar</button></td>`;
+                            } else if (columna === 'Eliminar') {
+                                fila.innerHTML += `<td><button id="btnEliminar${objeto.id}" class="table-button" data-action="eliminarElemento" type="button">Eliminar</button></td>`;
+                            }  else if (columna === "Fecha De Nacimiento") {
+                                fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto.fechaDeNacimiento}</td>`;
+                            } else if ("paisOrigen" in objeto && columna === "Pais Origen") {
+                                fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto.paisOrigen}</td>`;
+                            } else if (columna.toLowerCase() in objeto) {
+                                fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto[columna.toLowerCase()]}</td>`;
+                            } else {
+                                fila.innerHTML += `<td name="${columna.toLowerCase()}">N/A</td>`;
+                            }
+                        });
+                    } else {
+                        tbody.removeChild(fila);
+                    }
+                });
+
+                for (let i = filas.length; i < objetosGenerados.length; i++) {
+                    const objeto = objetosGenerados[i];
+                    const row = document.createElement('tr');
+                    row.classList.add(objeto instanceof Ciudadano ? 'ciudadano' : 'extranjero');
+
+                    columnas.forEach(columna => {
+                        if (columna === 'Modificar') {
+                            fila.innerHTML += `<td><button id="btnModificar${objeto.id}" class="table-button" data-action="modificarElemento" type="button">Modificar</button></td>`;
+                        } else if (columna === 'Eliminar') {
+                            fila.innerHTML += `<td><button id="btnEliminar${objeto.id}" class="table-button" data-action="eliminarElemento" type="button">Eliminar</button></td>`;
+                        }  else if (columna === "Fecha De Nacimiento") {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto.fechaDeNacimiento}</td>`;
+                        } else if ("paisOrigen" in objeto && columna === "Pais Origen") {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto.paisOrigen}</td>`;
+                        } else if (columna.toLowerCase() in objeto) {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">${objeto[columna.toLowerCase()]}</td>`;
+                        } else {
+                            fila.innerHTML += `<td name="${columna.toLowerCase()}">N/A</td>`;
+                        }
+                    });
+                    tbody.appendChild(row);
+                }
+                const tablaAltura = table.clientHeight;
+                const tablaAncho = table.clientWidth;
+                formListado.style.width = (tablaAncho + 10) + 'px';
+                formListado.style.height = (tablaAltura + 70) + 'px';
+            }
+
+            
+            txtTipo.addEventListener('change', ActualizarTxtFormAMB);
+
+            //BOTONES
+            btnCancelar.addEventListener('click', function() {
+                VisibilityFormularios(formAMB,formListado);
+                VaciarFormAMB();
+            });
+            
+            btnAceptar.addEventListener('click', function() {
+                let accion = window.accionSeleccionada;
+                if (accion === 'agregarElemento') {
+                    altaElemento();
+                } else if (accion === 'modificarElemento') {
+                    modificarElemento();
+                } else if (accion === 'eliminarElemento') {
+                    eliminarElemento();
+                }
+            });
+
+            btnAgregarElemento.addEventListener('click', function() {
+                window.accionSeleccionada = this.getAttribute('data-action');
+                
+                h3EncabezadoABM.innerText = "ALTA ELEMENTO";
+
+                HabilitarEdicion(true);
+                VisibilityFormularios(formListado,formAMB);
+                VaciarFormAMB();
+            }); 
+
+            document.addEventListener('click', function(event) {
+                if (event.target && event.target.id.startsWith('btnModificar')) {
+                    window.accionSeleccionada = event.target.getAttribute('data-action');
+
+                    h3EncabezadoABM.innerText = "MODIFICAR ELEMENTO";
+
+                    const id = parseInt(event.target.id.replace('btnModificar', ''));
+                    MostrarDatosFormAMB(id);
+                    HabilitarEdicion(true);
+
+                    txtTipo.disabled = true;
+                    ActualizarTxtFormAMB();
+                }
+            });
+
+            document.addEventListener('click', function(event) {
+                if (event.target && event.target.id.startsWith('btnEliminar')) {
+                    window.accionSeleccionada = event.target.getAttribute('data-action');
+
+                    h3EncabezadoABM.innerText = "ELIMINAR ELEMENTO";
+
+                    const id = parseInt(event.target.id.replace('btnEliminar', ''));
+                    MostrarDatosFormAMB(id);
+                    HabilitarEdicion(false);
+                }
+            });
+
+            function modificarElemento() {
+                spinnerOverlay.style.visibility = 'visible';
+
+                const id = txtId.value;
+                const nombre = txtNombre.value;
+                const apellido = txtApellido.value;
+                const fechaDeNacimiento = parseInt(txtFechaDeNacimiento.value);
+                const tipo = txtTipo.value;
+
+                let objetoModificado;
+
+                if (tipo === 'Ciudadano') {
+                    const dni = parseInt(txtDni.value);
+                    objetoModificado = new Ciudadano(dni, id, nombre, apellido, fechaDeNacimiento);
+                } else if (tipo === 'Extranjero') {
+                    const paisOrigen = txtPaisOrigen.value;
+                    objetoModificado = new Extranjero(paisOrigen, id, nombre, apellido, fechaDeNacimiento);
+                }
+
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(objetoModificado)
+                })
+                .then(response => {
+                    return response.text().then(responseText => {
+                        if (response.ok) {
+                            const index = objetosGenerados.findIndex(obj => obj.id === parseInt(id));
+                            if (index !== -1) {
+                                objetosGenerados[index] = objetoModificado;
+                            }
+                            ActualizarTabla();
+                        } else {
+                            throw new Error('Error en la solicitud');
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Error al querer modificar ciudadano o extranjero:\n" + error.message);
+                })
+                .finally(() => {
+                    spinnerOverlay.style.visibility = 'hidden';
+                    VisibilityFormularios(formAMB, formListado);
+                    VaciarFormAMB();
+                });
+            }
+            
+            // Funciones asincrónicas
+            async function eliminarElemento() {
+                spinnerOverlay.style.visibility = 'visible';
+
+                const id = parseInt(txtId.value);
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id: id })
+                    });
+
+                    if (response.status === 200) {
+                        objetosGenerados = objetosGenerados.filter(obj => obj.id !== id);
+                        ActualizarTabla();
+                    } else {
+                        throw new Error('Error en la solicitud');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('No se pudo realizar la operación.');
+                } finally {
+                    spinnerOverlay.style.visibility = 'hidden';
+                    VisibilityFormularios(formAMB, formListado);
+                }
+                VaciarFormAMB();
+            }
+
+            async function altaElemento() {
+                spinnerOverlay.style.visibility = 'visible';
+
+                let newObject;
+
+                try {
+                    if (txtTipo.value === "Ciudadano") {
+                        newObject = new Ciudadano(
+                            parseInt(txtDni.value),
+                            undefined,
+                            txtNombre.value, 
+                            txtApellido.value, 
+                            parseInt(txtFechaDeNacimiento.value)
+                        );
+                    } else if (txtTipo.value === "Extranjero") {
+                        newObject = new Extranjero(
+                            txtPaisOrigen.value,
+                            undefined,
+                            txtNombre.value, 
+                            txtApellido.value, 
+                            parseInt(txtFechaDeNacimiento.value)
+                        );
+                    } else {
+                        throw new Error('Debe seleccionar el tipo de usuario que desea agregar');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert("Error al dar alta a un nuevo ciudadano o extranjero:\n" + error.message);
+                    spinnerOverlay.style.visibility = 'hidden';
+                    return;
+                }
+
+                delete newObject.id;
+                const jsonString = JSON.stringify(newObject);
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: jsonString
+                    });
+
+                    if (response.status === 200) {
+                        const data = await response.json();
+                        newObject.id = data.id;
+                        objetosGenerados.push(newObject);
+                        ActualizarTabla();
+                        formAMB.style.visibility = 'hidden';
+                        formListado.style.visibility = 'visible';
+                    } else {
+                        throw new Error('Error en la solicitud');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('No se pudo realizar la operación.');
+                    formAMB.style.visibility = 'hidden';
+                    formListado.style.visibility = 'visible';
+                } finally {
+                    spinnerOverlay.style.visibility = 'hidden';
+                    VaciarFormAMB();
+                }
+            }
+
+
+            function MostrarDatosFormAMB(id) {
+                const objeto = objetosGenerados.find(obj => obj.id === parseInt(id));
+
+                if (objeto) {
+                    txtId.value = objeto.id;
+                    txtNombre.value = objeto.nombre;
+                    txtApellido.value = objeto.apellido;
+                    txtFechaDeNacimiento.value = objeto.fechaDeNacimiento;
+                    txtTipo.value = objeto instanceof Ciudadano ? 'Ciudadano' : 'Extranjero';
+
+                    if (objeto instanceof Ciudadano) {
+                        txtDni.value = objeto.dni;
+                    } else if (objeto instanceof Extranjero) {
+                        txtPaisOrigen.value = objeto.paisOrigen;
+                    }
+
+                    VisibilityFormularios(formListado, formAMB);
+                }
+            }
+
+            function ActualizarTxtFormAMB() {
+                const filtro = txtTipo.value
+                if (filtro == "Ciudadano") {
+                    txtDni.disabled = false;
+                    txtPaisOrigen.disabled = true;
+                }
+                else {
+                    txtDni.disabled = true;
+                    txtPaisOrigen.disabled = false;
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <form class="form-listado" >
+
+        <h1>Formulario Lista</h1>
+    
+        <table border="1">
+            <tr>
+            </tr>
+        </table>
+
+        <div class="espacio"></div>
+
+        <button id="btnAgregarElemento" type="button" data-action="agregarElemento" class="posicion-centrada-abajo">Agregar Elemento</button>
+    </form>  
+
+    <form class="form-ABM">
+        <h1>Formulario ABM</h1>
+
+        <div class="contenedor">
+            <h3 id="encabezadoABM"></h3>
+        </div>
+
+        <div class="contenedor">
+            <p>Id:</p>
+            <input class="input-box" type="number" name="txtId" size="35" value="" id="txtId" disabled="false"/>
+        </div>
+
+        <div class="contenedor">
+            <p>Nombre:</p>
+            <input class="input-box" type="text" name="txtNombre" size="35" value="" id="txtNombre"/>
+        </div>
+
+        <div class="contenedor">
+            <p>Apellido:</p>
+            <input class="input-box" type="text" name="txtApellido" size="35" value="" id="txtApellido"/>         
+        </div>
+        
+        <div class="contenedor">
+            <p>Tipo:</p>
+            <select class="input-box" id="txtTipo" name="txtTipo">
+                <option value="" selected disabled>Selecciona una opción</option>
+                <option>Ciudadano</option>
+                <option>Extranjero</option>
+            </select>
+        </div>
+        
+        <div class="contenedor">
+            <p>Fecha de Nacimiento:</p>
+            <input class="input-box" type="number" name="txtFechaDeNacimiento" size="35" value="" id="txtFechaDeNacimiento"/>         
+        </div>
+
+        <div class="contenedor">
+            <p>Dni:</p>
+            <input class="input-box" type="number" name="txtDni" size="35" value="" id="txtDni"/>         
+        </div>
+        
+        <div class="contenedor" visibility="hidden">
+            <p>Pais Origen:</p>
+            <input class="input-box" type="text" name="txtPaisOrigen" size="35" value="" id="txtPaisOrigen"/>         
+        </div>
+
+        <div class="contenedor-botones">
+            <button id="btnAceptar" type="button">Aceptar</button>
+            <button id="btnCancelar" type="button">Cancelar</button>
+        </div>
+    </form>
+</body>
+</html>
